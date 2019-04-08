@@ -3,10 +3,29 @@ import { AppRegistry, Text, View, TouchableHighlight, StyleSheet, TextInput } fr
 import { Constants } from 'expo';
 
 export default class App extends Component {
-    state ={
-        bal: 1,
-        newBal: 0,
-        inputValue: 'Choose a number'
+    constructor(props) {
+        super(props)
+        this.state = {
+            bal:1.00,
+            newBal: 0,
+            inputValue: "",
+            isLoading: true,
+            dataSource: null,
+        }
+    }
+    componentDidMount (){
+        return fetch('http://www.apilayer.net/api/live?access_key=5677cb33ee5f6fe09247e03b2809f655')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    isLoading: false,
+                    dataSource: responseJson.quotes,
+                })
+            })
+ 
+            .catch((error) => {
+                console.log(error)
+            });
     }
     usToEuro = () => {
         this.setState({ 
@@ -56,6 +75,15 @@ export default class App extends Component {
 
 
     render() {
+        
+        if(this.state.isLoading) {
+        return(
+            <View style = {styles.container}>
+                <ActivityIndicator/>
+            </View>
+        )
+    } else{
+
         return (
             <View style={styles.container}>
                 <Text style={styles.paragraph}>
@@ -154,6 +182,7 @@ export default class App extends Component {
             </View>
       );
    }
+}
 }
 
 const styles = StyleSheet.create({
